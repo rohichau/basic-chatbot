@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: >
+      bash -c "python -m spacy download en_core_web_md && flask run --host=0.0.0.0"
+    ports:
+      - "8000:8000"  # Expose Flask API on port 5000
+    volumes:
+      - ./backend:/app
+    environment:
+      FLASK_ENV: development
+    depends_on:
+      - frontend
+
+  frontend:
+    build:
+      context: ./frontend/chatbot
+      dockerfile: Dockerfile
+    command: ["npm", "start"]
+    ports:
+      - "3000:3000"  # Expose React app on port 3000
+    volumes:
+      - ./frontend/chatbot:/app
+    stdin_open: true
+    tty: true
+
+volumes:
+  backend-data:
+  frontend-data:
